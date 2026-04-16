@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mcp_postgres
+    environment:
+      POSTGRES_USER: mcp_user
+      POSTGRES_PASSWORD: mcp_password
+      POSTGRES_DB: mcp_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - mcp_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  mcp_postgres_data:
