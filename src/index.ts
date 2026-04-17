@@ -29,7 +29,7 @@ server.tool(
     const result = await pool.query(`
       SELECT table_name
       FROM information_schema.tables
-      WHERE table_schema = 'public'
+      WHERE table_schema = 'public' 
       ORDER BY table_name
     `);
 
@@ -100,6 +100,32 @@ server.tool(
   }
 );
 
+server.tool(
+  "count_rows",
+  "Devuelve el número total de filas de una tabla especificada.",
+  {
+    table_name: z.string().describe("Nombre de la tabla a consultar")
+  },
+  async ({ table_name }) => {
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(table_name)) {
+      throw new Error("Nombre de tabla inválido");
+    }
+
+    const query = `SELECT COUNT(*) as count FROM ${table_name}`;
+    const result = await pool.query(query);
+    const count = parseInt(result.rows[0].count, 10);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: `La tabla '${table_name}' tiene ${count} filas.`
+        }
+      ]
+    };
+  }
+);        
+         
 // --- Arrancar servidor ---
 const transport = new StdioServerTransport();
 await server.connect(transport);
